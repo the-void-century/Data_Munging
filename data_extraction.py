@@ -1,6 +1,6 @@
+"""This Module extracts data from a given file"""
 class DataExtractor():
-    """This class is solely reponsible for data extraction from text files provided"""
-
+    """This class extracts data from a given file and accepts file path as an argument"""
     def __init__(self, data_path):
         self.data = []
         self.column_names = {}
@@ -10,7 +10,7 @@ class DataExtractor():
             for rows in list(text_file):
                 self.data.append(rows)
 
-    def _get_column_indexes(self):
+    def __get_column_indexes(self):
         """This function maps column indexes to their respective names"""
         curr_column_name = ""
         prev_index = 0
@@ -33,25 +33,24 @@ class DataExtractor():
             first=len(self.data[0])-len(curr_column_name)
             self.is_column_area[first]=1
             self.is_column_area[last]=1
-            self.column_names[(first,last)]=curr_column_name
-        print(self.column_names)
-        print(self.is_column_area)
+            self.column_names[(first,last-2)]=curr_column_name
+        #print(self.column_names)
+        #print(self.is_column_area)
         self.data=self.data[1:]
 
     def __check_edges(self, edge, row, data_point):
         """This function checks if a number is leaking out
         of their columns"""
-        print("Yes it is passing:",data_point)
-        check_whats_passing=data_point
+        #print("Yes it is passing:",data_point)
+        #check_whats_passing=data_point
         left_leak = ""
         right_leak = ""
         bad_data=False
         try:
             left_edge=self.data[row][edge[0]-1]
             right_edge=self.data[row][edge[1]]
-            
         except IndexError:
-            print("Exception", row, edge[0],edge[1])
+            #print("Exception", row, edge[0],edge[1])
             return ""
         if left_edge != " " and self.data[row][edge[0]]!=" ":
             for i in range(edge[0]-1, -1, -1):
@@ -73,16 +72,16 @@ class DataExtractor():
         data_point = left_leak+data_point
         data_point += right_leak
         if bad_data:
-            print("Bad data: ", data_point)
-            print("left edge:",left_edge)
-            print("right edge:",right_edge)
-            print("Og value:",check_whats_passing)
-            print("Length of og value:",len(check_whats_passing))
+            #print("Bad data: ", data_point)
+            #print("left edge:",left_edge)
+            #print("right edge:",right_edge)
+            #print("Orignal value:",check_whats_passing)
+            #print("Length of original value:",len(check_whats_passing))
             data_point=""
         #print("right_leak", right_leak)
         return data_point
 
-    def add_in_dict(self, key, value):
+    def __add_in_dict(self, key, value):
         """This function adds corresponding keys and values
         in the transformed data dictionary
         """
@@ -95,7 +94,7 @@ class DataExtractor():
         """This function maps all values to their respective columns
         while handling any missing or incorrect data type values
         """
-        self._get_column_indexes()
+        self.__get_column_indexes()
         for curr_index, data in enumerate(self.data):
             for keys,column in self.column_names.items():
                 start, end = keys[0], keys[1]
@@ -104,18 +103,7 @@ class DataExtractor():
                         keys, curr_index, data_point)
                 data_point = data_point.strip()
                 if data_point != '':
-                    self.add_in_dict(column, data_point)
+                    self.__add_in_dict(column, data_point)
                 else:
-                    self.add_in_dict(column, "NA")
-        for items in self.transformed_data.items():
-            print(items[0], "  :  ", items[1])
-
-
-def main():
-    """This is the main function"""
-    data = DataExtractor("data/football.dat")
-    data.map_values_to_columns()
-
-
-if __name__ == "__main__":
-    main()
+                    self.__add_in_dict(column, "NA")
+        return self.transformed_data
