@@ -1,11 +1,12 @@
 """This Module extracts data from a given file"""
 class DataExtractor():
     """This class extracts data from a given file and accepts file path as an argument"""
-    def __init__(self, data_path):
-        self.data = []
-        self.column_names = {}
-        self.transformed_data = {}
+    def __init__(self):
+        self.data=[]
+        self.column_names={}
+        self.transformed_data={}
         self.is_column_area={}
+    def set_data(self, data_path):
         with open(data_path, 'r', encoding='utf-8') as text_file:
             for rows in list(text_file):
                 self.data.append(rows)
